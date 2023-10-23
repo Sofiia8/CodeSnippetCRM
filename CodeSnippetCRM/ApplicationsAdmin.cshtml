@@ -1,0 +1,145 @@
+﻿<!-- Стартовая страница версии админа (без LayOut). Основная функция - администрировать заявки от клиентов.-->
+@model IEnumerable<Website.Models.ApplicationView>
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<main>
+    <div class="container-fluid px-4">
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2 class="m-0">Заявки</h2>
+                <h6 class="m-0">Всего заявок: @ViewBag.countAll</h6>
+            </div>
+
+            <div class="card-body form-floating">
+                <div class="datatable-wrapper datatable-loading no-footer sortable searchable fixed-columns">
+                    <div>
+                        <form method="get" asp-controller="Request" asp-action="GetItemsFromToDates">
+                            <div class="row mb-3">
+                                <div class="col-md-4 mb-3 d-flex">
+                                    <label class="align-items-center d-flex">
+                                        <h6>За данный период поступило заявок: @ViewBag.count</h6>
+                                    </label>
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-3 d-flex">
+                                    <label class="me-3 align-items-center d-flex text-nowrap" for="dateTimeFrom">Период с:</label>
+                                    <input class="form-control" id="dateTimeFrom" name="dateTimeFrom" type="date" placeholder="Период с" value=@ViewBag.dateFrom />
+                                </div>
+                                <div class="col-xl-3 col-md-6 mb-3 d-flex">
+                                    <label class="me-3 align-items-center d-flex text-nowrap" for="dateTimeTo">по</label>
+                                    <input class="datatable-input" id="dateTimeTo" name="dateTimeTo" type="date" placeholder="по" value=@ViewBag.dateTo />
+                                </div>
+                                <div class="col-xl-2 col-md-6 mb-3">
+                                    <input class="btn btn-secondary" type="submit" value="Задать период" />
+                                </div>
+                            </div>
+                        </form>
+                        <div class="row mb-3">
+                            <div class="col-xl-3 col-md-6">
+                                <form method="get" asp-controller="Request" asp-action="GetItemsFromToDates">
+                                    <div class="card mb-4">
+                                        <input type="hidden" name="dateTimeFrom" value=@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd") />
+                                        <input type="hidden" name="dateTimeTo" value=@DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd") />
+                                        <input class="btn btn-light" id="yesterday" name="yesterday" type="submit" placeholder="Вчера" value="Вчера" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <form method="get" asp-controller="Request" asp-action="GetItemsFromToDates">
+                                    <div class="card mb-4">
+                                        <input type="hidden" name="dateTimeFrom" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+                                        <input type="hidden" name="dateTimeTo" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+                                        <input class="btn btn-light" id="today" name="today" type="submit" placeholder="Сегодня" value="Сегодня" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <form method="get" asp-controller="Request" asp-action="GetItemsFromToDates">
+                                    <div class="card mb-4">
+                                        <input type="hidden" name="dateTimeFrom" value=@DateTime.Today.AddDays(Convert.ToInt32(DateTime.Now.DayOfWeek) == 0? -6 : 1 - Convert.ToInt32(DateTime.Now.DayOfWeek)).ToString("yyyy-MM-dd") />
+                                        <input type="hidden" name="dateTimeTo" value=@DateTime.Today.ToString("yyyy-MM-dd") />
+                                        <input class="btn btn-light" id="week" name="week" type="submit" placeholder="Неделя" value="Неделя" />
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-xl-3 col-md-6">
+                                <form method="get" asp-controller="Request" asp-action="GetItemsFromToDates">
+                                    <div class="card mb-4">
+                                        <input type="hidden" name="dateTimeFrom" value=@((new DateTime(DateTime.Now.Year,DateTime.Now.Month,1)).ToString("yyyy-MM-dd")) />
+                                        <input type="hidden" name="dateTimeTo" value=@((new DateTime (DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month))).ToString("yyyy-MM-dd")) />
+                                        <input class="btn btn-light" id="month" name="month" type="submit" placeholder="Месяц" value="Месяц" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="datatable-container">
+                        <table class="datatable-table">
+                            <thead>
+                                <tr>
+                                    <th data-sortable="true">ID</th>
+                                    <th data-sortable="true">Дата создания</th>
+                                    <th data-sortable="true">Имя</th>
+                                    <th data-sortable="true">Email</th>
+                                    <th data-sortable="true">Описание</th>
+                                    <th data-sortable="true">Статус</th>
+                                    <th>Изменить статус</th>
+                                </tr>
+                            </thead>
+                            @if (Model.Count() > 10)
+                            {
+                                <tfoot>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Дата создания</th>
+                                        <th>Имя</th>
+                                        <th>Email</th>
+                                        <th>Описание</th>
+                                        <th>Статус</th>
+                                        <th>Изменить статус</th>
+                                    </tr>
+                                </tfoot>
+                            }
+                            <tbody>
+                                @foreach (var apply in Model)
+                                {
+                                    <tr>
+                                        <td>@apply.Id</td>
+                                        <td>@apply.Datetime</td>
+                                        <td>@apply.Name</td>
+                                        <td>@apply.Email</td>
+                                        <td>@apply.Description</td>
+                                        <td>@apply.Status</td>
+                                        <td>
+                                            <div>
+                                                <a class="nav-link dropdown-toggle pt-0  mx-3" href="#" role="button" data-bs-toggle="dropdown" title="ChangeStatus" aria-expanded="false">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z" />
+                                                    </svg>
+                                                </a>
+                                                <ul class="dropdown-menu dropdown-menu-end" style="z-index: 1050;">
+                                                    @foreach (var status in ViewBag.dictionary)
+                                                    {
+                                                        <li>
+                                                            <form method="post" asp-controller="Request" asp-action="EditStatus">
+                                                                <input class="dropdown-item" type="submit" name="status" value="@status.Value">
+                                                                <input type="hidden" name="id" value="@apply.Id">
+                                                                <input type="hidden" name="dateFrom" value="@ViewBag.dateFrom">
+                                                                <input type="hidden" name="dateTo" value="@ViewBag.dateTo">
+                                                            </form>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>

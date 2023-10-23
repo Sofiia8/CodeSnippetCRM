@@ -1,0 +1,67 @@
+﻿<!-- Стартовая страница лендиногового сайта. Основная функция лендинга - принять заявку от клиента.-->
+@model Website.Models.AppSettingView
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+<header class="masthead">
+    <div class="container px-4 px-lg-5 d-flex h-100 align-items-center justify-content-center">
+        <div class="d-flex justify-content-center">
+            <div class="text-center">
+                <h1 class="mx-auto my-0 text-uppercase">@Model.FieldHeader</h1>
+                <h2 class="text-white-50 mx-auto mt-2 mb-5">@Model.FieldSlogan</h2>
+                <a class="btn btn-primary" href="#signup">@Model.ButtonBegin</a>
+            </div>
+        </div>
+    </div>
+</header>
+
+<section class="about-section text-center" id="about">
+</section>
+<section class="signup-section" id="signup">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5">
+            <div class="col-md-10 col-lg-8 mx-auto text-center">
+                <i class="far fa-paper-plane fa-2x mb-2 text-white"></i>
+                <h2 class="text-white mb-5">@Model.FieldFillForm</h2>
+                <form class="form-signup" id="contactForm" method="post" asp-controller="Request" asp-action="Create">
+                    <div class="row mx-2">
+                        <div class="col">
+                            <div asp-validation-summary="ModelOnly"></div>
+                            <div class="my-4">
+                                <input class="form-control" name="name" aria-label=@Model.FieldName placeholder="Имя" id="fieldName" />
+                            </div>
+                            <div class="my-4">
+                                <input class="form-control" name="email" aria-label=@Model.FieldEmail placeholder="Email" id="fieldEmail" />
+                            </div>
+                            <div class="my-4">
+                                <input class="form-control" name="description" aria-label=@Model.FieldDescription placeholder="Описание" id="fieldDescription" />
+                            </div>
+                        </div>
+                        <div class="col m-auto d-flex flex-column align-items-center">
+                            <input class="btn btn-primary" type="submit" value=@Model.ButtonPost disabled id="submitButton" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    const fieldName = document.getElementById('fieldName');
+    const fieldEmail = document.getElementById('fieldEmail');
+    const fieldDescription = document.getElementById('fieldDescription');
+    const submitButton = document.getElementById('submitButton');
+
+    fieldName.addEventListener('input', checkFields);
+    fieldEmail.addEventListener('input', checkFields);
+    fieldDescription.addEventListener('input', checkFields);
+
+    function checkFields() {
+        if (fieldName.value.trim() !== '' && fieldEmail.value.trim() !== '' && fieldDescription.value.trim() !== '') {
+            submitButton.disabled = false;
+        } else {
+            submitButton.disabled = true;
+        }
+    }
+</script>
